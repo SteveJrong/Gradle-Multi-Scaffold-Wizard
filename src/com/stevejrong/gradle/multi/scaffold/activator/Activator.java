@@ -14,7 +14,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "GradleMultiScaffoldWizard"; // 插件ID
+	public static final String PLUGIN_ID = "com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard"; // 插件ID
 
 	private static Activator plugin;
 
