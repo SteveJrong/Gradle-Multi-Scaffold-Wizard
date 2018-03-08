@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Gradle (MMS)"
+            id="com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard">
+      </category>
+      <wizard
+            name="Gradle (MMS) Project"
+            icon="icons/sample.gif"
+            category="com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard"
+            class="com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard"
+            id="com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard">
+      </wizard>
+   </extension>
+</plugin>

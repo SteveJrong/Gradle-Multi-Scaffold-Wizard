@@ -1,0 +1,6 @@
+{
+	"fmProjectName": "quickstart-root-project",
+	"fmRepositories": "http://maven.aliyun.com/nexus/content/groups/public",
+	"fmEncoding": "UTF-8",
+	"fmTransitive": "false"
+}

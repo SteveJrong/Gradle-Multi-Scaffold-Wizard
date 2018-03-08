@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard
+Bundle-SymbolicName: com.stevejrong.gradle.multi.scaffold.wizard.GradleMultiScaffoldWizard;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.stevejrong.gradle.multi.scaffold.activator.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/freemarker-2.3.9.jar,
+ lib/fastjson-1.2.9.jar,
+ config/
+
