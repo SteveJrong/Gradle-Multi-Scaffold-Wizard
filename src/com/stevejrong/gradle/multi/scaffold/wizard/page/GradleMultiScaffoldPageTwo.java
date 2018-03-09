@@ -54,16 +54,15 @@ public class GradleMultiScaffoldPageTwo extends BaseWizardPage {
 	}
 
 	public GradleMultiScaffoldPageTwo(ISelection selection) {
-		super("Fast construction of Gradle multi module project"); // 快速构建Gradle多模块项目
+		super(Constants.WIZARD_PAGE_NAME);
 		pageInit();
 		dataInit();
 	}
 	
 	void pageInit() {
-		setTitle("Fast build Gradle multi module project with customizable configuration"); // 快速构建可定制配置的Gradle多模块项目
-		setDescription("Setting up the basic information of subprojects."); // 设置子项目的基本信息。
-		ImageDescriptor image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-				"icons/gradle-logo-64.png");
+		setTitle(Constants.WIZARD_PAGE_TITLE);
+		setDescription(Constants.WIZARD_PAGE_TWO_DESCRIPTION);
+		ImageDescriptor image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Constants.WIZARD_PAGE_ICON_RELATIVE_PATH);
 		setImageDescriptor(image);
 	}
 	
@@ -102,7 +101,6 @@ public class GradleMultiScaffoldPageTwo extends BaseWizardPage {
 						pageValidate(subProjectTextChanged(getAllTextControl().toArray()));
 					}
 				});
-				
 				container.layout();
 			}
 		});

@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.stevejrong.gradle.multi.scaffold.activator.Activator;
+import com.stevejrong.gradle.multi.scaffold.constant.Constants;
 import com.stevejrong.gradle.multi.scaffold.wizard.page.base.BaseWizardPage;
 
 /**
@@ -52,16 +53,15 @@ public class GradleMultiScaffoldPageThree extends BaseWizardPage {
 	}
 
 	public GradleMultiScaffoldPageThree(ISelection selection) {
-		super("Fast construction of Gradle multi module project"); // 快速构建Gradle多模块项目
+		super(Constants.WIZARD_PAGE_NAME);
 		pageInit();
 		dataInit();
 	}
 	
 	void pageInit() {
-		setTitle("Fast build Gradle multi module project with customizable configuration"); // 快速构建可定制配置的Gradle多模块项目
-		setDescription("Setting up personalized generation information."); // 设置个性化的生成信息。
-		ImageDescriptor image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-				"icons/gradle-logo-64.png");
+		setTitle(Constants.WIZARD_PAGE_TITLE);
+		setDescription(Constants.WIZARD_PAGE_THREE_DESCRIPTION);
+		ImageDescriptor image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Constants.WIZARD_PAGE_ICON_RELATIVE_PATH);
 		setImageDescriptor(image);
 	}
 	
@@ -84,12 +84,9 @@ public class GradleMultiScaffoldPageThree extends BaseWizardPage {
 		repositoriesCombo = new Combo(container, SWT.BORDER);
 		GridData gridDataOfRepositoriesCombo = new GridData(GridData.FILL_HORIZONTAL);
 		repositoriesCombo.setLayoutData(gridDataOfRepositoriesCombo);
-		repositoriesCombo.add("http://maven.aliyun.com/nexus/content/groups/public/");
-		repositoriesCombo.add("http://repo1.maven.org/maven2/");
-		repositoriesCombo.add("http://repo2.maven.org/maven2/");
-		repositoriesCombo.add("http://uk.maven.org/maven2/");
-		repositoriesCombo.add("http://repository.jboss.org/nexus/content/groups/public/");
-		repositoriesCombo.add("http://mirrors.ibiblio.org/maven2/");
+		Constants.DEFAULT_GRADLE_REPOSITORIES.forEach(action -> {
+			repositoriesCombo.add(action);
+		});
 		repositoriesCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -104,11 +101,9 @@ public class GradleMultiScaffoldPageThree extends BaseWizardPage {
 		 buildEncodeCombo = new Combo(container, SWT.BORDER);
 		GridData gridDataOfBuildEncodeCombo = new GridData(GridData.FILL_HORIZONTAL);
 		buildEncodeCombo.setLayoutData(gridDataOfBuildEncodeCombo);
-		buildEncodeCombo.add("GBK");
-		buildEncodeCombo.add("GB2312");
-		buildEncodeCombo.add("UTF-8");
-		buildEncodeCombo.add("UTF-16");
-		buildEncodeCombo.add("ISO-8859-1");
+		Constants.DEFAULT_BUILD_ENCODE.forEach(action -> {
+			buildEncodeCombo.add(action);
+		});
 		buildEncodeCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -119,7 +114,6 @@ public class GradleMultiScaffoldPageThree extends BaseWizardPage {
 		
 		setControl(container); // 将容器设置到当前窗体中
 	}
-
 
 	String repositoriesComboSelectionChanged() {
 		if (null == getRepositoriesComboText() || getRepositoriesComboText().trim().equals("")) {

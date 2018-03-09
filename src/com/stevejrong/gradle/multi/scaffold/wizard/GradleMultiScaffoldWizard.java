@@ -71,23 +71,7 @@ public class GradleMultiScaffoldWizard extends Wizard implements INewWizard {
 	 */
 	public boolean performFinish() {
 		GradleRootProject rootProject = StorageUtil.getInstance();
-		
-		// 设置根项目信息
-		rootProject.setProjectPath(pageOne.getRootProjectPathText());
-		rootProject.setProjectName(pageOne.getRootProjectNameText());
-		rootProject.setBuildEncode(pageThree.getBuildEncodeComboText());
-		rootProject.setRepositoryUrl(pageThree.getRepositoriesComboText());
-		
-		// 设置子项目信息
-		for (Text textControl : pageTwo.getAllTextControl()) {
-			GradleSubProject subProject = new GradleSubProject();
-			subProject.setProjectPath(pageOne.getRootProjectPathText() + File.separatorChar + pageOne.getRootProjectNameText() + File.separatorChar + textControl.getText());
-			subProject.setProjectName(textControl.getText());
-			subProject.setBuildEncode(pageThree.getBuildEncodeComboText());
-			subProject.setRepositoryUrl(pageThree.getRepositoriesComboText());
-			
-			rootProject.getSubProjects().add(subProject);
-		}
+		makeCustomSettings(rootProject);
 		
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
@@ -106,12 +90,35 @@ public class GradleMultiScaffoldWizard extends Wizard implements INewWizard {
 			return false;
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
-			MessageDialog.openError(getShell(), "Error", realException.getMessage());
+			MessageDialog.openError(getShell(), "Error", realException.getLocalizedMessage());
 			return false;
 		}
 		
-		StorageUtil.cleanUp();
+		StorageUtil.cleanUp(); // 清理存储以便不影响下次使用
 		return true;
+	}
+
+	/**
+	 * 根据用户设置构造必要的构建信息
+	 * @param rootProject
+	 */
+	private void makeCustomSettings(GradleRootProject rootProject) {
+		// 设置根项目信息
+		rootProject.setProjectPath(pageOne.getRootProjectPathText());
+		rootProject.setProjectName(pageOne.getRootProjectNameText());
+		rootProject.setBuildEncode(pageThree.getBuildEncodeComboText());
+		rootProject.setRepositoryUrl(pageThree.getRepositoriesComboText());
+		
+		// 设置子项目信息
+		for (Text textControl : pageTwo.getAllTextControl()) {
+			GradleSubProject subProject = new GradleSubProject();
+			subProject.setProjectPath(pageOne.getRootProjectPathText() + File.separatorChar + pageOne.getRootProjectNameText() + File.separatorChar + textControl.getText());
+			subProject.setProjectName(textControl.getText());
+			subProject.setBuildEncode(pageThree.getBuildEncodeComboText());
+			subProject.setRepositoryUrl(pageThree.getRepositoriesComboText());
+			
+			rootProject.getSubProjects().add(subProject);
+		}
 	}
 
 	/**
@@ -141,7 +148,7 @@ public class GradleMultiScaffoldWizard extends Wizard implements INewWizard {
 	 * @param rootProject
 	 * @param monitor
 	 */
-	void createRootProject(GradleRootProject rootProject, IProgressMonitor monitor) {
+	private void createRootProject(GradleRootProject rootProject, IProgressMonitor monitor) {
 		monitor.setTaskName("Building root project "+ rootProject.getProjectName() + "...");
 		
 		String fullProjectPath = rootProject.getProjectPath() + File.separatorChar + rootProject.getProjectName(); // 项目完全路径，包括项目名称
