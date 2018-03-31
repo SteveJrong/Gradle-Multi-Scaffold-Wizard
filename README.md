@@ -13,7 +13,19 @@
 ## 兼容性
 支持 Eclipse/MyEclipse IDE
 
-## 更新日志
+在以下操作系统平台和Eclipse版本中测试通过：
+* Eclipse Version: Mars.2 Release (4.5.2) based on macOS High Sierra 10.13.3
+* Eclipse Version: Oxygen.3 Release (4.7.3) based on macOS High Sierra 10.13.3
+
+## 未来将实现
+* 根据主项目名快速生成常用的子项目，同时支持自定义子项目名
+* 生成之后立即导入到Eclipse工作空间中
+
+## 更新日志（由新到旧）
+### 2018/3/31
+版本号： 1.0.0.201803311356
+主项目的settings.gradle配置文件支持自动拼接生成include命令代码将子项目包含进来。
+
 ### 2018/3/9
 版本号： 1.0.0.201803091308
 代码结构优化。
@@ -21,5 +33,3 @@
 ### 2018/3/8
 版本号： 1.0.0.201803090113
 第一版发布。
-
-

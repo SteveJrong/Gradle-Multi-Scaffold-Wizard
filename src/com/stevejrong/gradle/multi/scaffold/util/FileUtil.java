@@ -109,19 +109,50 @@ public class FileUtil {
 	
 	/**
 	 * 根据配置构建文件
+	 * 此方法的使用场景适用于构建子项目的配置文件时使用
+	 * 
 	 * @param createFilePath 创建文件的目标路径
 	 * @param configCommonName config配置文件夹下通用的文件名称 如：build.gradle文件的默认配置文件为build.gradle.json、模板文件为build.gradle.ftl，则通用文件名称为build.gradle
 	 * @param customResourceMap 用户自定义resourceMap，用于替换默认的模板配置
 	 * @return true-构建成功;false-构建失败
 	 */
 	public static boolean buildFileByConfig(String createFilePath, String configCommonName, Map<String, String> customResourceMap){
-		Map<String, String> defaultResourceMap = FreeMarkerUtil.getDefaultFreeMarkerConfig(configCommonName); // 获取默认配置
-		if (null != customResourceMap && customResourceMap.size() > 0) {
-			defaultResourceMap.putAll(customResourceMap); // 将用户设置替换为模板中的默认值
+		return FileUtil.createFileWithWriteTexts(createFilePath + File.separatorChar + configCommonName, getTemplateProcessResultByConfig(configCommonName, customResourceMap));
+	}
+	
+	/**
+	 * 根据配置构建文件，并在构建好的文件末尾追加自定义的字符
+	 * 此方法的使用场景适用于构建主项目的配置文件时使用，便于在其后追加include命令
+	 * 
+	 * @param createFilePath 创建文件的目标路径
+	 * @param configCommonName config配置文件夹下通用的文件名称 如：build.gradle文件的默认配置文件为build.gradle.json、模板文件为build.gradle.ftl，则通用文件名称为build.gradle
+	 * @param customResourceMap 用户自定义resourceMap，用于替换默认的模板配置
+	 * @param str 自定义的字符
+	 * @return true-构建成功;false-构建失败
+	 */
+	public static boolean buildAndAppendStrFileToByConfig(String createFilePath, String configCommonName, Map<String, String> customResourceMap, StringBuilder str){
+		return FileUtil.createFileWithWriteTexts(createFilePath + File.separatorChar + configCommonName, getTemplateProcessResultByConfig(configCommonName, customResourceMap) + str.toString());
+	}
+	
+	/**
+	 * 根据配置获取模板合并处理后的字符串结果
+	 * @param configCommonName config配置文件夹下通用的文件名称 如：build.gradle文件的默认配置文件为build.gradle.json、模板文件为build.gradle.ftl，则通用文件名称为build.gradle
+	 * @param customResourceMap 用户自定义resourceMap，用于替换默认的模板配置
+	 * @return 合并处理后的字符串
+	 */
+	private static String getTemplateProcessResultByConfig(String configCommonName, Map<String, String> customResourceMap) {
+		String processResult = null;
+		try {
+			Map<String, String> defaultResourceMap = FreeMarkerUtil.getDefaultFreeMarkerConfig(configCommonName); // 获取默认配置
+			if (null != customResourceMap && customResourceMap.size() > 0) {
+				defaultResourceMap.putAll(customResourceMap); // 将用户设置替换为模板中的默认值
+			}
+			processResult = FreeMarkerUtil.processTemplateToString(configCommonName, defaultResourceMap);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		String processResult = FreeMarkerUtil.processTemplateToString(configCommonName, defaultResourceMap);
-		FileUtil.createFileWithWriteTexts(createFilePath + File.separatorChar + configCommonName, processResult);
-		return false;
+		
+		return processResult;
 	}
 	
 	/**

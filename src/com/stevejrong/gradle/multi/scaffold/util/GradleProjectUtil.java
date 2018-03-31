@@ -15,9 +15,12 @@
  */
 package com.stevejrong.gradle.multi.scaffold.util;
 
+import java.io.File;
 import java.util.HashMap;
 
 import com.stevejrong.gradle.multi.scaffold.business.service.impl.AbstractGradleProject;
+import com.stevejrong.gradle.multi.scaffold.business.service.impl.GradleRootProject;
+import com.stevejrong.gradle.multi.scaffold.business.service.impl.GradleSubProject;
 import com.stevejrong.gradle.multi.scaffold.constant.Constants;
 
 /**
@@ -31,7 +34,7 @@ public class GradleProjectUtil {
 	
 	/**
 	 * 创建单个Gradle项目
-	 * @param rootProject
+	 * @param project
 	 * @param fullProjectPath
 	 * @return
 	 */
@@ -52,13 +55,13 @@ public class GradleProjectUtil {
 			}
 		});
 		// 创建settings.gradle文件
-		FileUtil.buildFileByConfig(fullProjectPath, Constants.SETTINGS_GRADLE_FILE_NAME, new HashMap<String, String>(){
-			private static final long serialVersionUID = 81507219267150664L;
-			{
-				put("fmProjectName", project.getProjectName());
-				put("fmEncoding", project.getBuildEncode());
-			}
-		});
+		// 创建主项目的settings.gradle文件
+		if (project instanceof GradleRootProject) {
+			createSettingsGradleFileByRootProject(fullProjectPath, (GradleRootProject) project, Constants.SETTINGS_GRADLE_FILE_NAME);
+		} else {
+			// 创建子项目的settings.gradle文件
+			createSettingsGradleFileBySubProject(fullProjectPath, (GradleSubProject) project, Constants.SETTINGS_GRADLE_FILE_NAME);
+		}
 		
 		// 创建src/main/java和src/test/java包结构
 		FileUtil.createDirectory(fullProjectPath + Constants.SRC_MAIN_PACKAGE_RELATIVE_PATH);
@@ -75,5 +78,88 @@ public class GradleProjectUtil {
 		
 		return true;
 	}
+	
+	/**
+	 * 创建子项目的settings.gradle文件
+	 * @param fullProjectPath
+	 * @param subProject
+	 * @param settingsGradleFileName
+	 */
+	private static void createSettingsGradleFileBySubProject(String fullProjectPath, GradleSubProject subProject,
+			String settingsGradleFileName) {
+		FileUtil.buildFileByConfig(fullProjectPath, Constants.SETTINGS_GRADLE_FILE_NAME, new HashMap<String, String>(){
+			private static final long serialVersionUID = 81507219267150664L;
+			{
+				put("fmProjectName", subProject.getProjectName());
+				put("fmEncoding", subProject.getBuildEncode());
+			}
+		});
+	}
 
+	/**
+	 * 创建主项目的settings.gradle文件
+	 * @param fullProjectPath
+	 * @param rootProject
+	 * @param settingsGradleFileName
+	 */
+	private static void createSettingsGradleFileByRootProject(String fullProjectPath, GradleRootProject rootProject, String settingsGradleFileName) {
+		FileUtil.buildAndAppendStrFileToByConfig(fullProjectPath, Constants.SETTINGS_GRADLE_FILE_NAME, new HashMap<String, String>(){
+			private static final long serialVersionUID = 81507219267150664L;
+			{
+				put("fmProjectName", rootProject.getProjectName());
+				put("fmEncoding", rootProject.getBuildEncode());
+			}
+		}, executeSettingsGradleFileCodeByRootProject(rootProject));
+	}
+
+	/**
+	 * 处理主项目的settings.gradle文件配置
+	 * @param rootProject
+	 * @return
+	 */
+	private static StringBuilder executeSettingsGradleFileCodeByRootProject(GradleRootProject rootProject) {
+		StringBuilder strByInclude = new StringBuilder("\n");
+		StringBuilder strBySubProjectPath = new StringBuilder("\n");
+		
+		if (null != rootProject && null != rootProject.getSubProjects() && rootProject.getSubProjects().size() > 0) {
+			for (int i = 0; i < rootProject.getSubProjects().size(); i++) {
+				// 处理include部分
+				executeIncludeCode(rootProject, strByInclude, i);
+				// 处理各个子项目路径部分
+				executeSubProjectsPathCode(rootProject, strBySubProjectPath, i);
+			}
+		}
+		
+		return strByInclude.append("\n").append(strBySubProjectPath).append("\n");
+	}
+
+	/**
+	 * 处理各个子项目相对于主项目的相对路径，使得被包含进来的子项目可以被主项目找到
+	 * @param rootProject
+	 * @param strByInclude
+	 * @param i
+	 */
+	private static void executeIncludeCode(GradleRootProject rootProject, StringBuilder strByInclude, int i) {
+		if (i == 0) {
+			strByInclude.append("\ninclude\t");
+		}else {
+			strByInclude.append("\t\t");
+		}
+		strByInclude.append("'" + rootProject.getSubProjects().get(i).getProjectName() + "'");
+		if (i + 1 < rootProject.getSubProjects().size()) {
+			strByInclude.append(",\n");
+		}
+	}
+	
+	/**
+	 * 处理“Include”代码部分，使得子项目包含到主项目中
+	 * @param rootProject
+	 * @param strBySubProjectPath
+	 * @param i
+	 */
+	private static void executeSubProjectsPathCode(GradleRootProject rootProject, StringBuilder strBySubProjectPath,
+			int i) {
+		strBySubProjectPath.append("project(':" + rootProject.getSubProjects().get(i).getProjectName() + "').projectDir "
+				+ "= new File(settingsDir, '" + File.separatorChar + rootProject.getSubProjects().get(i).getProjectName() + "')\n");
+	}
 }
